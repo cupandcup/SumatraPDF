@@ -1223,6 +1223,31 @@ void DisplayModel::SetDisplayMode(DisplayMode newDisplayMode, bool keepContinuou
     GoToPage(currPageNo, 0);
 }
 
+void DisplayModel::SetSinglePageMode(int pageNo)
+{
+    DisplayMode newDisplayMode = DM_SINGLE_PAGE;
+    if (IsContinuous(displayMode)) {
+        newDisplayMode = DM_CONTINUOUS;
+    }
+
+    if (displayMode == newDisplayMode)
+        return;
+
+    displayMode = newDisplayMode;
+    if (IsContinuous(newDisplayMode)) {
+        /* mark all pages as shown but not yet visible. The equivalent code
+        for non-continuous mode is in DisplayModel::changeStartPage() called
+        from DisplayModel::GoToPage() */
+        for (int pNo = 1; pNo <= PageCount(); pNo++) {
+            PageInfo *pageInfo = &(pagesInfo[pNo - 1]);
+            pageInfo->shown = true;
+            pageInfo->visibleRatio = 0.0;
+        }
+        Relayout(zoomVirtual, rotation);
+    }
+    GoToPage(pageNo, 0);
+}
+
 void DisplayModel::SetPresentationMode(bool enable)
 {
     presentationMode = enable;

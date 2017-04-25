@@ -56,6 +56,7 @@ public:
 
     // view settings
     virtual void SetDisplayMode(DisplayMode mode, bool keepContinuous=false) = 0;
+    virtual void SetSinglePageMode(int pageNo) = 0;
     virtual DisplayMode GetDisplayMode() const = 0;
     virtual void SetPresentationMode(bool enable) = 0;
     virtual void SetZoomVirtual(float zoom, PointI *fixPt=nullptr) = 0;

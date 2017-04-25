@@ -285,6 +285,9 @@ static void OnMouseLeftButtonUp(WindowInfo* win, int x, int y, WPARAM key)
     }
 
     DisplayModel *dm = win->AsFixed();
+    if (dm->GetDisplayMode() == DM_THUMBNAIL) {
+        return;
+    }
     PointD ptPage = dm->CvtFromScreen(PointI(x, y));
     // TODO: win->linkHandler->GotoLink might spin the event loop
     PageElement *link = win->linkOnLastButtonDown;
@@ -656,6 +659,12 @@ static void DrawDocument(WindowInfo* win, HDC hdc, RECT *rcArea)
             SelectObject(hdc, hPrevFont);
             continue;
         }
+
+        // TODO test
+        COLORREF color;
+        color = RGB(255, 0, 0); // red
+        SetTextColor(hdc, color);
+        DrawCenteredBottomText(hdc, bounds, _TR("TEST"), IsUIRightToLeft());
 
         if (!renderOutOfDateCue)
             continue;

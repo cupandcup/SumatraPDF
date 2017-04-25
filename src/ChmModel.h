@@ -31,6 +31,7 @@ public:
 
     // view settings
     virtual void SetDisplayMode(DisplayMode mode, bool keepContinuous = false) { UNUSED(mode); UNUSED(keepContinuous); /* not supported */ }
+    virtual void SetSinglePageMode(int pageNo) { UNUSED(pageNo); /* not supported */ };
     virtual DisplayMode GetDisplayMode() const { return DM_SINGLE_PAGE; }
     virtual void SetPresentationMode(bool enable) { UNUSED(enable); /* not supported */ }
     virtual void SetZoomVirtual(float zoom, PointI *fixPt=nullptr);

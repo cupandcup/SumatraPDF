@@ -33,6 +33,7 @@ class EbookController : public Controller {
     virtual void Navigate(int dir);
 
     virtual void SetDisplayMode(DisplayMode mode, bool keepContinuous = false);
+    virtual void SetSinglePageMode(int pageNo) { UNUSED(pageNo); /* not supported */ };
     virtual DisplayMode GetDisplayMode() const { return IsDoublePage() ? DM_FACING : DM_SINGLE_PAGE; }
     virtual void SetPresentationMode(bool enable) { UNUSED(enable); /* not supported */ }
     virtual void SetZoomVirtual(float zoom, PointI* fixPt = nullptr) {
