@@ -241,7 +241,16 @@ static void OnMouseLeftButtonDown(WindowInfo* win, int x, int y, WPARAM key)
 
     AssertCrash(!win->linkOnLastButtonDown);
     DisplayModel *dm = win->AsFixed();
-    PageElement *pageEl = dm->GetElementAtPos(PointI(x, y));
+    if (dm->GetDisplayMode() == DM_THUMBNAIL) {
+        int pageNo = dm->GetPageNoByPoint(PointI(x, y));
+        if (dm->ValidPageNo(pageNo)) {
+            dm->SetSinglePageMode(pageNo);
+            dm->SetZoomVirtual(ZOOM_FIT_PAGE);
+        }
+
+        return;
+    }
+    PageElement* pageEl = dm->GetElementAtPos(PointI(x, y));
     if (pageEl && pageEl->GetType() == Element_Link)
         win->linkOnLastButtonDown = pageEl;
     else
@@ -660,11 +669,15 @@ static void DrawDocument(WindowInfo* win, HDC hdc, RECT *rcArea)
             continue;
         }
 
-        // TODO test
-        COLORREF color;
-        color = RGB(255, 0, 0); // red
-        SetTextColor(hdc, color);
-        DrawCenteredBottomText(hdc, bounds, _TR("TEST"), IsUIRightToLeft());
+        // Show "Viewed" on clicked page under thumbnail view mode
+        if (dm->GetDisplayMode() == DM_THUMBNAIL) {
+            if (dm->IsPageViewedInThumbnail(pageNo)) {
+                COLORREF color;
+                color = RGB(255, 0, 0); // red
+                SetTextColor(hdc, color);
+                DrawCenteredBottomText(hdc, bounds, _TR("Viewed"), IsUIRightToLeft());
+            }
+        }
 
         if (!renderOutOfDateCue)
             continue;

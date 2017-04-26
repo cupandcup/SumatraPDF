@@ -236,6 +236,10 @@ void DisplayModel::BuildPagesInfo()
     int pageCount = PageCount();
     pagesInfo = AllocArray<PageInfo>(pageCount);
 
+    /* build thumnail viewed history */
+    pageViewedHistoryInThumbnail = AllocArray<bool>(pageCount);
+    startPageInThumbnail = -1;
+
     RectD defaultRect;
     if (0 == GetMeasurementSystem())
         defaultRect = RectD(0, 0, 21.0 / 2.54 * engine->GetFileDPI(), 29.7 / 2.54 * engine->GetFileDPI());
@@ -258,6 +262,9 @@ void DisplayModel::BuildPagesInfo()
             pageInfo->shown = true;
         else if (newStartPage <= pageNo && pageNo < newStartPage + columns)
             pageInfo->shown = true;
+
+        /* init thumnail viewed history */
+        pageViewedHistoryInThumbnail[pageNo - 1] = false;
     }
 }
 
@@ -1220,7 +1227,16 @@ void DisplayModel::SetDisplayMode(DisplayMode newDisplayMode, bool keepContinuou
         }
         Relayout(zoomVirtual, rotation);
     }
-    GoToPage(currPageNo, 0);
+
+    if (displayMode == DM_THUMBNAIL) {
+        if (startPageInThumbnail == -1) {
+            startPageInThumbnail = currPageNo;
+        }
+        GoToPage(startPageInThumbnail, 0);
+    }
+    else {
+        GoToPage(currPageNo, 0);
+    }
 }
 
 void DisplayModel::SetSinglePageMode(int pageNo)
@@ -1232,6 +1248,10 @@ void DisplayModel::SetSinglePageMode(int pageNo)
 
     if (displayMode == newDisplayMode)
         return;
+
+    if (displayMode == DM_THUMBNAIL) {
+        startPageInThumbnail = CurrentPageNo();
+    }
 
     displayMode = newDisplayMode;
     if (IsContinuous(newDisplayMode)) {
@@ -1245,6 +1265,7 @@ void DisplayModel::SetSinglePageMode(int pageNo)
         }
         Relayout(zoomVirtual, rotation);
     }
+    pageViewedHistoryInThumbnail[pageNo - 1] = true;
     GoToPage(pageNo, 0);
 }
 
@@ -1824,4 +1845,13 @@ void DisplayModel::ScrollToLink(PageDestination *dest)
     if (scroll.y < 0)
         scroll.y = 0; // Adobe Reader never shows the previous page
     GoToPage(pageNo, scroll.y, true, scroll.x);
+}
+
+bool DisplayModel::IsPageViewedInThumbnail(int pageNo) const
+{
+    if (!ValidPageNo(pageNo))
+        return false;
+    assert(pageViewedHistoryInThumbnail);
+    if (!pageViewedHistoryInThumbnail) return false;
+    return pageViewedHistoryInThumbnail[pageNo - 1];
 }

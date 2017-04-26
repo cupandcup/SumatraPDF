@@ -574,6 +574,18 @@ void DrawCenteredText(HDC hdc, const RECT &r, const WCHAR *txt, bool isRTL) {
     DrawCenteredText(hdc, rc, txt, isRTL);
 }
 
+void DrawCenteredBottomText(HDC hdc, const RectI &r, const WCHAR *txt, bool isRTL) {
+    SetBkMode(hdc, TRANSPARENT);
+    RECT tmpRect = r.ToRECT();
+    DrawText(hdc, txt, -1, &tmpRect,
+        DT_CENTER | DT_BOTTOM | DT_SINGLELINE | DT_NOPREFIX | (isRTL ? DT_RTLREADING : 0));
+}
+
+void DrawCenteredBottomText(HDC hdc, const RECT &r, const WCHAR *txt, bool isRTL) {
+    RectI rc = RectI::FromRECT(r);
+    DrawCenteredText(hdc, rc, txt, isRTL);
+}
+
 /* Return size of a text <txt> in a given <hwnd>, taking into account its font */
 SizeI TextSizeInHwnd(HWND hwnd, const WCHAR *txt, HFONT font) {
     SIZE sz;

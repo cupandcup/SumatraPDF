@@ -189,6 +189,9 @@ public:
 
     bool            GetPresentationMode() const { return presentationMode; }
 
+    /* add for show "Viewed" text in thumbnail mode*/
+    bool            IsPageViewedInThumbnail(int pageNo) const;
+
 protected:
 
     void            BuildPagesInfo();
@@ -250,6 +253,10 @@ protected:
     /* index of the "current" history entry (to be updated on navigation),
        resp. number of Back history entries */
     size_t          navHistoryIx;
+
+    /* we need to remember the start page of Thumbnail view, as well as if the page is viewed */
+    int startPageInThumbnail;
+    bool* pageViewedHistoryInThumbnail;
 };
 
 int     NormalizeRotation(int rotation);
